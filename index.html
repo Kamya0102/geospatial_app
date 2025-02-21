@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geospatial Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Geospatial Map</h1>
+    <div id="map"></div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data');
+            const geoData = await response.json();
+
+            const mapData = [{
+                type: "scattergeo",
+                mode: "markers",
+                geojson: geoData
+            }];
+
+            const layout = {
+                title: "Geospatial Visualization",
+                geo: {
+                    scope: "world"
+                }
+            };
+
+            Plotly.newPlot("map", mapData, layout);
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geospatial Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        #map {
+            height: 90vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Geospatial Map from CosmosDB</h2>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize the map centered on the United States
+        var map = L.map('map').setView([37.0902, -95.7129], 4);  // Center on the US
+
+        // Add a base layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Function to fetch and plot GeoJSON data
+        async function loadGeoJSON() {
+            try {
+                let response = await fetch('/data');  // Fetch GeoJSON from Flask API
+                let geojsonData = await response.json();
+
+                // Add GeoJSON layer to map
+                L.geoJSON(geojsonData, {
+                    style: function (feature) {
+                        return { color: "blue", weight: 2 };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup(`<b>Name:</b> ${feature.properties.name} <br> <b>GeoID:</b> ${feature.properties.geoid}`);
+                    }
+                }).addTo(map);
+
+            } catch (error) {
+                console.error("Error loading GeoJSON:", error);
+            }
+        }
+
+        loadGeoJSON();  // Call function to load data
+    </script>
+
+</body>
+</html>
